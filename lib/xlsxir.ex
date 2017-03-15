@@ -1,5 +1,6 @@
 defmodule Xlsxir do
   alias Xlsxir.{Index, SaxParser, Timer, Unzip, Worksheet}
+  require Logger
 
   @moduledoc """
   Extracts and parses data from a `.xlsx` file to an Erlang Term Storage (ETS) process and provides various functions for accessing the data.
@@ -400,10 +401,15 @@ defmodule Xlsxir do
   def get_row(table_id, row), do: do_get_row(row, table_id)
 
   defp do_get_row(row, table_id \\ :worksheet) do
-    [[row]] = :ets.match(table_id, {row, :"$1"})
-
-    row
-    |> Enum.map(fn [_ref, val] -> val end)
+    raw_row = :ets.match(table_id, {row, :"$1"})
+    case raw_row do
+      [[row]] -> 
+        row
+        |> Enum.map(fn [_ref, val] -> val end)
+      raw_row ->
+        Logger.warn("Invalid row detected: #{raw_row}, returning empty row list")
+        []
+    end
   end
 
   @doc """
