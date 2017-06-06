@@ -57,14 +57,14 @@ defmodule Xlsxir.Codepoint do
   Updates the Agent process to the given codepoint
   """
   def hold(codepoint) do
-    Agent.update(Codepoint, &(&1 - &1 + codepoint))
+    Agent.update(Codepoint, &(&1 - &1 + codepoint), 15_000)
   end
 
   @doc """
   Returns current codepoing being held by the Agent process
   """
   def get do
-    Agent.get(Codepoint, &(&1))
+    Agent.get(Codepoint, &(&1), 15_000)
   end
 
   @doc """
